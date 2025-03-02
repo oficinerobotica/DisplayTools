@@ -1,6 +1,6 @@
 import FreeCAD, FreeCADGui
 from Utils.resource_utils import iconPath
-from HelperTools import dinamic_grid
+from HelperTools import dynamic_grid
 
 
 class CreateSeparator:
@@ -16,21 +16,21 @@ class CreateSeparator:
     def IsActive(self):
         return False  # The separator itself is not an active command
     
-class CreateDinamicGrid:
+class CreateDynamicGrid:
     toolbarName = 'Helper_Tools'
-    commandName = 'Dinamic_Grid'
+    commandName = 'Dynamic_Grid'
 
     def GetResources(self):
-        return {'MenuText' : 'Create dinamic grid',
-                'ToolTip' : 'Create dinamic grid',
-                'Pixmap' : iconPath('CreateDinamicGrid.svg')
+        return {'MenuText' : 'Create dynamic grid',
+                'ToolTip' : 'Create dynamic grid',
+                'Pixmap' : iconPath('CreateDynamicGrid.svg')
                 }
     
     def Activated(self):
-        dinamic_grid.createDinamicGrid()
+        dynamic_grid.createDynamicGrid()
 
     def IsActive(self):
         return not FreeCAD.ActiveDocument is None
     
 import displaytools_toolbars
-displaytools_toolbars.toolbarManager.registerCommand(CreateDinamicGrid())
+displaytools_toolbars.toolbarManager.registerCommand(CreateDynamicGrid())
