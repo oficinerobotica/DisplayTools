@@ -1,6 +1,6 @@
 import FreeCAD, FreeCADGui
 from Utils.resource_utils import iconPath
-from SpaceNav.spacenav_commands import SpaceNavCommands
+from SpaceNav import spacenav_commands
 
 class CreateSeparator:
     toolbarName = 'Light_Tools'
@@ -26,7 +26,7 @@ class SpToolsLockRot:
                 }
     
     def Activated(self):
-        SpaceNavCommands()
+        spacenav_commands.SpaceNavCommands()
 
     def IsActive(self):
         """If there is no active document we can't do anything."""
@@ -43,7 +43,7 @@ class SpToolsLockTrans:
                 }
     
     def Activated(self):
-        SpaceNavCommands()
+        spacenav_commands.SpaceNavCommands()
 
     def IsActive(self):
         """If there is no active document we can't do anything."""
@@ -60,7 +60,7 @@ class SpToolsLockHorison:
                 }
     
     def Activated(self):
-        SpaceNavCommands()
+        spacenav_commands.SpaceNavCommands()
 
     def IsActive(self):
         """If there is no active document we can't do anything."""

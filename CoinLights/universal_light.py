@@ -101,12 +101,7 @@ class ViewProviderUniversalLight:
     def onChanged(self, vp, prop):
         if prop == 'Visibility':
             self.updateLightVisibility()
-        """
-        elif prop == 'ShowManipulator':
-            self.ViewObject.Proxy.showManipulator()
-        if prop == "Scale":  # If Scale is changed, update manipulator
-            self.ViewObject.Proxy.scaleManipulator()
-"""
+
     def __getstate__(self):
         return None
 

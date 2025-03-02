@@ -2,7 +2,7 @@ import FreeCAD, FreeCADGui
 from Utils.resource_utils import iconPath
 #from Utils import qtutils
 import create_scene_config
-from CoinLights import point_light, directional_light, spot_light, test_light, manipulator 
+from CoinLights import point_light, directional_light, spot_light, manipulator 
 
 
 class CreateSceneConfigCommand:
@@ -99,7 +99,8 @@ class CreateTestCommand:
                 }
 
     def Activated(self):
-        test_light.createDirLightManip()
+        pass
+    
     def IsActive(self):
         """If there is no active document we can't do anything."""
         return not FreeCAD.ActiveDocument is None
