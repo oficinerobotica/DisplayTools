@@ -49,13 +49,13 @@ class SpToolsLockTrans:
         """If there is no active document we can't do anything."""
         return not FreeCAD.ActiveDocument is None
 
-class SpToolsLockHorison:
+class SpToolsLockHorizon:
     toolbarName = 'SpaceNav_Tools'
-    commandName = 'Lock_Horison'
+    commandName = 'Lock_Horizon'
 
     def GetResources(self):
-        return {'MenuText': "Lock SpaceNav horison",
-                'ToolTip' : "Lock SpaceNav horison",
+        return {'MenuText': "Lock SpaceNav horizon",
+                'ToolTip' : "Lock SpaceNav horizon",
                 'Pixmap': iconPath('SpNav_LockHor.svg')
                 }
     
@@ -70,6 +70,6 @@ import displaytools_toolbars
 displaytools_toolbars.toolbarManager.registerCommand(CreateSeparator())
 displaytools_toolbars.toolbarManager.registerCommand(SpToolsLockRot())
 displaytools_toolbars.toolbarManager.registerCommand(SpToolsLockTrans())
-displaytools_toolbars.toolbarManager.registerCommand(SpToolsLockHorison())
+displaytools_toolbars.toolbarManager.registerCommand(SpToolsLockHorizon())
 
 
