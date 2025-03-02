@@ -101,7 +101,7 @@ class DynamicGrid():
         if 'Spacing' not in pl:
             obj.addProperty("App::PropertyIntegerConstraint", "Spacing", "Grid", "Grid spacing").Spacing = (10, 1, 10**6, 5)
         if 'Dynamic' not in pl:
-            obj.addProperty("App::PropertyBool", "Dynamic", "Grid", "Update grid position based on the 3d sceene").Dynamic = True
+            obj.addProperty("App::PropertyBool", "Dynamic", "Grid", "Update grid position based on the 3d scene").Dynamic = True
     def onDocumentRestored(self, obj):
         self.setProperties(obj)
         

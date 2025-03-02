@@ -52,7 +52,7 @@ class ViewProviderLightManip:
         self.Object = vobj.Object # Store the Feature object in the ViewProvider
 
         # Setting properties does not work here as the pl is not filled yet :/
-        # Building the sceene graph:        
+        # Building the scenegraph:        
         
         sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
         self.switch_node = coin.SoSwitch()
