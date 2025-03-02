@@ -18,7 +18,7 @@ class GeometryObserver:
         self.scene_graph = self.view.getSceneGraph()
         self.sensor = coin.SoNodeSensor(self.on_geometry_change, self.scene_graph)
         self.sensor.attach(self.scene_graph)
-        self.callback = callback  # Store the callback from ViewProviderDinamicGrid
+        self.callback = callback  # Store the callback from ViewProviderDynamicGrid
 
     def on_geometry_change(self, node, sensor):
         if self.callback:
@@ -85,7 +85,7 @@ class GeometryObserver:
         self.detach()
 
 
-class DinamicGrid():
+class DynamicGrid():
     def __init__(self, obj):
         obj.Proxy = self
         self.setProperties(obj)
@@ -100,8 +100,8 @@ class DinamicGrid():
             obj.addProperty("App::PropertyIntegerConstraint", "Size", "Grid", "Grid size").Size = (100, 1, 10**6, 5)
         if 'Spacing' not in pl:
             obj.addProperty("App::PropertyIntegerConstraint", "Spacing", "Grid", "Grid spacing").Spacing = (10, 1, 10**6, 5)
-        if 'Dinamic' not in pl:
-            obj.addProperty("App::PropertyBool", "Dinamic", "Grid", "Update grid position based on the 3d sceene").Dinamic = True
+        if 'Dynamic' not in pl:
+            obj.addProperty("App::PropertyBool", "Dynamic", "Grid", "Update grid position based on the 3d sceene").Dynamic = True
     def onDocumentRestored(self, obj):
         self.setProperties(obj)
         
@@ -153,7 +153,7 @@ class LowestVisibleZ:
                 min_z = z_min
         return min_z
 
-class ViewProviderDinamicGrid():
+class ViewProviderDynamicGrid():
     def __init__(self, vobj):
         vobj.Proxy = self
         self.setProperties(vobj)
@@ -177,11 +177,11 @@ class ViewProviderDinamicGrid():
         # Add the switch to the scene graph
         sceneGraph.addChild(self.switch)
         
-        vobj.addDisplayMode(self.switch, "DinamicGrid")
+        vobj.addDisplayMode(self.switch, "DynamicGrid")
         self.updateColor()         # Apply initial color
         self.updateGridVisibility()  # Apply initial visibility state
         self.updateGridLocation()
-        self.updateDinamicLocation()
+        self.updateDynamicLocation()
 
     def setProperties(self, vobj):
         pl = vobj.PropertiesList
@@ -294,10 +294,10 @@ class ViewProviderDinamicGrid():
         return grid_node
 
     def getDisplayModes(self, obj):
-        return ["DinamicGrid"]
+        return ["DynamicGrid"]
 
     def getDefaultDisplayMode(self):
-        return "DinamicGrid"
+        return "DynamicGrid"
 
     def updateData(self, fp, prop):
         print(f"updateData: Property '{prop}' changed")
@@ -315,8 +315,8 @@ class ViewProviderDinamicGrid():
             # Create new grid and add it
             newGrid = self.createGrid()
             self.separator.addChild(newGrid)
-        elif prop == 'Dinamic':
-            self.updateDinamicLocation()
+        elif prop == 'Dynamic':
+            self.updateDynamicLocation()
             FreeCADGui.updateGui()
 
     def onChanged(self, vp, prop):
@@ -376,10 +376,10 @@ class ViewProviderDinamicGrid():
         coinVector = coin.SbVec3f(placement.Base.x, placement.Base.y, placement.Base.z)  # Extract position
         self.transform.translation.setValue(coinVector)
         
-    def updateDinamicLocation(self):
-        """Activates or deactivates GeometryObserver based on 'Dinamic' property."""
-        print(f"updateDinamicLocation: Dinamic property is {self.Object.Dinamic}")
-        if self.Object.Dinamic:
+    def updateDynamicLocation(self):
+        """Activates or deactivates GeometryObserver based on 'Dynamic' property."""
+        print(f"updateDynamicLocation: Dynamic property is {self.Object.Dynamic}")
+        if self.Object.Dynamic:
             if not hasattr(self, "geometry_observer") or self.geometry_observer is None:
                 self.geometry_observer = GeometryObserver(self.onSceneGeometryChanged)
                 print("GeometryObserver initialized.")
@@ -396,7 +396,7 @@ class ViewProviderDinamicGrid():
 
     def onSceneGeometryChanged(self):
         """Handle scene geometry changes by updating the grid's Z position."""
-        if self.Object.Dinamic:  # Only update if the grid is dynamic
+        if self.Object.Dynamic:  # Only update if the grid is dynamic
             min_z_calculator = LowestVisibleZ()
             min_z = min_z_calculator.return_lowest_z()
             if min_z is not None:
@@ -416,10 +416,10 @@ class ViewProviderDinamicGrid():
         return iconPath('Grid.svg')
         
 
-def createDinamicGrid():
-    obj = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "DinamicGrid")
-    grid = DinamicGrid(obj)
-    ViewProviderDinamicGrid(obj.ViewObject)
+def createDynamicGrid():
+    obj = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "DynamicGrid")
+    grid = DynamicGrid(obj)
+    ViewProviderDynamicGrid(obj.ViewObject)
 
 if __name__ == "__main__":
-    createDinamicGrid()
+    createDynamicGrid()
