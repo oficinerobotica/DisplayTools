@@ -54,8 +54,8 @@ class SpToolsLockHorizon:
     commandName = 'Lock_Horizon'
 
     def GetResources(self):
-        return {'MenuText': "Lock SpaceNav horison",
-                'ToolTip' : "Lock SpaceNav horison",
+        return {'MenuText': "Lock SpaceNav horizon",
+                'ToolTip' : "Lock SpaceNav horizon",
                 'Pixmap': iconPath('SpNav_LockHor.svg')
                 }
     
