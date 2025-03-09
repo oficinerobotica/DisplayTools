@@ -30,11 +30,17 @@ class ViewProviderPointLight(light.ViewProviderUniversalLight):
 
     def attach(self, vobj):
         super().attach(vobj)
-        self.updateLocation()
+        #self.updateLocation()
 
     
     def createLightInstance(self):
-        return coin.SoPointLightManip()
+        return coin.SoPointLight()
+    
+    def createLightManipInstance(self):
+        self.PointLightManip = coin.SoPointLightManip()
+        self.PointLightManip.intensity.setValue(0)
+        return self.PointLightManip
+        
     
     
     def getIcon(self):

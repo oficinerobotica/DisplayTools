@@ -14,17 +14,8 @@ class DirectionalLight(universal_light.UniversalLight):
     
         pl = obj.PropertiesList
 
-        if not 'Distance' in pl:
-            obj.addProperty("App::PropertyFloatConstraint", "Distance", "Light",
-                            "The distance from the center of the scene.").Distance = (5000.0, 5, 100000.0, 5)  # Default: 5000, Min: 5, Max: 100000, Step: 5
-            
-        if not 'HorizontalRotation' in pl:
-            obj.addProperty("App::PropertyAngle", "HorizontalRotation", "Light",
-                            "The horizontal rotation around the origin. Zero means a light pointing from south to north.").HorizontalRotation = 0
-        
-        if not 'VerticalRotation' in pl:
-            obj.addProperty("App::PropertyAngle", "VerticalRotation", "Light", 
-                            "The up and downward rotation").VerticalRotation = 45        
+        if 'Direction' not in obj.PropertiesList:
+            obj.addProperty("App::PropertyVector", "Direction", "Light", "Direction of the light")     
     
         self.type = 'DirectionalLight'
 
@@ -33,14 +24,14 @@ class ViewProviderDirectionalLight(universal_light.ViewProviderUniversalLight):
         super().__init__(vobj)
 
     def createLightInstance(self):
-        return coin.SoDirectionalLightManip()
+        return coin.SoDirectionalLight()
     
-    def createGeometry(self):
-        cone = coin.SoCone()
-        return cone
+    def createLightManipInstance(self):
+        self.PointLightManip = coin.SoDirectionalLightManip()
+        self.PointLightManip.intensity.setValue(0)
+        return self.PointLightManip
 
-
-
+    """
     def updateData(self, fp, prop):
         if prop in ['HorizontalRotation', 'VerticalRotation', 'Distance']:
             self.updateLightDirection()
@@ -58,7 +49,7 @@ class ViewProviderDirectionalLight(universal_light.ViewProviderUniversalLight):
         direction = rotation.multVec(FreeCAD.Vector(0, 0, -1))
         coinVector = coin.SbVec3f(direction.x, direction.y, direction.z)
         self.coinLight.direction.setValue(coinVector)
-        
+    """
 
     def getIcon(self):
         return iconPath("CreateDirectionalLight.svg")
