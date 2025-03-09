@@ -1,6 +1,8 @@
 import FreeCAD
 import FreeCADGui
 import pivy.coin as coin
+
+import create_scene_config
 from Utils.resource_utils import iconPath
 
 """
@@ -95,7 +97,7 @@ class DynamicGrid():
         if 'Placement' not in pl:
             obj.addProperty("App::PropertyPlacement", "Placement", "Base", "Defines the placement of the grid").Placement = FreeCAD.Placement(FreeCAD.Vector(0, 0, 0), FreeCAD.Rotation(0, 0, 0))
         if 'Color' not in pl:
-            obj.addProperty("App::PropertyColor", "Color", "Grid", "Grid color").Color = (1.0, 1.0, 1.0)
+            obj.addProperty("App::PropertyColor", "Color", "Grid", "Grid color").Color = (0.5, 0.5, 0.5)
         if 'Size' not in pl:
             obj.addProperty("App::PropertyIntegerConstraint", "Size", "Grid", "Grid size").Size = (100, 1, 10**6, 5)
         if 'Spacing' not in pl:
@@ -176,6 +178,7 @@ class ViewProviderDynamicGrid():
         self.switch.addChild(self.separator)     
         # Add the switch to the scene graph
         sceneGraph.addChild(self.switch)
+        self.place_grid_in_tree()
         
         vobj.addDisplayMode(self.switch, "DynamicGrid")
         self.updateColor()         # Apply initial color
@@ -349,6 +352,21 @@ class ViewProviderDynamicGrid():
 
     def __setstate__(self, state):
         return None
+    
+    def place_grid_in_tree(self):
+        doc = FreeCAD.ActiveDocument
+        scene_folder = None
+        for obj in doc.Objects:
+            if hasattr(obj, "Proxy") and hasattr(obj.Proxy, "type") and  obj.Proxy.type == 'SceneConfiguration':
+                scene_folder = obj
+                break
+        if scene_folder:
+            scene_folder.addObject(self.Object)
+            
+        else:
+            scene_folder = create_scene_config.createSceneFolder()
+            scene_folder.addObject(self.Object)
+
 
     def updateGridVisibility(self):
         print(f"updateGridVisibility: Visibility = {self.ViewObject.Visibility}")
