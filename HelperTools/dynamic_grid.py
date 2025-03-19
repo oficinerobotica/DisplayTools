@@ -99,31 +99,32 @@ class LowestVisibleZ:
         """Return a list of objects that are visible in the scene."""
         return [obj for obj in self.doc.Objects if obj.ViewObject.isVisible()]
 
-    def get_objects_with_volume(self):
-        """Return a list of visible objects that have a valid shape and volume."""
+    def get_objects_with_bbox(self):
+        """Return a list of visible objects that have a valid shape."""
         visible_objects = self.get_visible_objects()
-        solids = []
+        valid_objects = []
         for obj in visible_objects:
             try:
-                shape = obj.Shape
-                if shape.isValid() and shape.Volume > 0:
-                    solids.append(obj)
-                else:
-                    print(f"Skipping {obj.Name}: No volume or invalid shape.")
+                if hasattr(obj, "Shape"):
+                    shape = obj.Shape
+                    if shape.isValid():
+                        valid_objects.append(obj)
+                    else:
+                        print(f"Skipping {obj.Name}: Invalid shape.")
             except (AttributeError, RuntimeError):
                 print(f"Skipping {obj.Name}: No shape or invalid geometry.")
-        return solids
+        return valid_objects
 
     def return_lowest_z(self):
-        """Find the lowest Z value among visible objects with volume."""
-        solids = self.get_objects_with_volume()
-        if not solids:
-            return None  # No valid solids found
+        """Find the lowest Z value among visible objects."""
+        objects = self.get_objects_with_bbox()
+        if not objects:
+            return None  # No valid objects found
         min_z = None
-        for obj in solids:
+        for obj in objects:
             bbox = obj.Shape.BoundBox
             z_min = bbox.ZMin
-            print(f"{obj.Name} (Solid) ZMin: {z_min}")
+            print(f"{obj.Name} ZMin: {z_min}")
             if min_z is None or z_min < min_z:
                 min_z = z_min
         return min_z
@@ -133,12 +134,17 @@ class ViewProviderDynamicGrid():
         vobj.Proxy = self
         self.setProperties(vobj)
 
+    # Add this method to prevent linking
+    def canLinkProperties(self):
+        return False
+        
     def attach(self, vobj):
         self.ViewObject = vobj
         self.Object = vobj.Object
         sceneGraph = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
         
         self.geometry_observer = None
+        self._current_z = None  # Track current Z position
         self.switch = coin.SoSwitch()  # Node that controls visibility
         self.separator = coin.SoSeparator()  # Container for transform, material, and grid
         self.transform = coin.SoTransform()
@@ -302,21 +308,26 @@ class ViewProviderDynamicGrid():
 
     def onSceneGeometryChanged(self):
         """Handle scene geometry changes by updating the grid's Z position."""
-        if self.Object.Dynamic:  # Only update if the grid is dynamic
-            min_z_calculator = LowestVisibleZ()
-            min_z = min_z_calculator.return_lowest_z()
-            if min_z is not None:
-                print(f"Updating grid Z location to: {min_z}")
-                self.updateGridZLocation(min_z)
-            else:
-                print("No valid solids found, cannot update grid Z.")
+        if not self.Object.Dynamic:  # Skip if not dynamic
+            return
+            
+        min_z_calculator = LowestVisibleZ()
+        min_z = min_z_calculator.return_lowest_z()
+        
+        # Only update if there's a valid Z and it's different from current
+        if min_z is not None and min_z != self._current_z:
+            print(f"Updating grid Z location from {self._current_z} to {min_z}")
+            self.updateGridZLocation(min_z)
+            self._current_z = min_z
+        else:
+            print("No Z update needed")
 
     def updateGridZLocation(self, z_value):
         """Update the grid's Z position to the given z_value."""
         placement = self.Object.Placement
         new_base = FreeCAD.Vector(placement.Base.x, placement.Base.y, z_value)
         self.Object.Placement = FreeCAD.Placement(new_base, placement.Rotation)
-        print(f"Grid Z position updated to {z_value}")
+        self._current_z = z_value
 
     def getIcon(self):
         return iconPath('Grid.svg')

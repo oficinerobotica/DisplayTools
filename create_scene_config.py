@@ -10,11 +10,6 @@ class CreateSceneConfig(object):
         pass  # No properties to set for now
 
     def create_tree_folder(self, obj):  
-        # Create "Lights" inside SceneFolder
-        lights_part = FreeCAD.ActiveDocument.addObject("App::Part", "Lights")
-        lights_part.Visibility = False
-        obj.addObject(lights_part)  # Add Lights directly to SceneFolder
-        FreeCAD.ActiveDocument.recompute()
         self.type = 'SceneConfiguration'
 
 class ViewProviderCreateSceneFolder:
@@ -27,8 +22,7 @@ class ViewProviderCreateSceneFolder:
         FreeCADGui.updateGui()
 
     def onChanged(self, vp, prop):
-        """Called when something changes (not just properties)."""
-        pass
+        FreeCADGui.updateGui()
 
     def getIcon(self):
         return iconPath('FolderTreeIcon.svg')
