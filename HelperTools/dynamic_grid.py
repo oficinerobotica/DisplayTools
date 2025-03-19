@@ -5,33 +5,34 @@ import pivy.coin as coin
 import create_scene_config
 from Utils.resource_utils import iconPath
 
-"""
-class GeometryObserver:
-    
-    #Class to observe geometry changes in the 3D viewport.
-    #Usage:
-    #  observer = GeometryObserver()
-      
-    #To stop observing later:
-    #  observer.detach()
-    
-    def __init__(self, callback):
-        self.view = FreeCADGui.ActiveDocument.ActiveView
-        self.scene_graph = self.view.getSceneGraph()
-        self.sensor = coin.SoNodeSensor(self.on_geometry_change, self.scene_graph)
-        self.sensor.attach(self.scene_graph)
-        self.callback = callback  # Store the callback from ViewProviderDynamicGrid
+class DynamicGrid():
+    def __init__(self, obj):
+        obj.Proxy = self
+        self.setProperties(obj)
+        
+    def setProperties(self, obj):
+        pl = obj.PropertiesList
+        if 'Placement' not in pl:
+            obj.addProperty("App::PropertyPlacement", "Placement", "Base", "Defines the placement of the grid").Placement = FreeCAD.Placement(FreeCAD.Vector(0, 0, 0), FreeCAD.Rotation(0, 0, 0))
+        if 'Color' not in pl:
+            obj.addProperty("App::PropertyColor", "Color", "Grid", "Grid color").Color = (0.5, 0.5, 0.5)
+        if 'Size' not in pl:
+            obj.addProperty("App::PropertyIntegerConstraint", "Size", "Grid", "Grid size").Size = (100, 1, 10**6, 5)
+        if 'Spacing' not in pl:
+            obj.addProperty("App::PropertyIntegerConstraint", "Spacing", "Grid", "Grid spacing").Spacing = (10, 1, 10**6, 5)
+        if 'Dynamic' not in pl:
+            obj.addProperty("App::PropertyBool", "Dynamic", "Grid", "Update grid position based on the 3d scene").Dynamic = True
+    def onDocumentRestored(self, obj):
+        self.setProperties(obj)
+        
+    def __getstate__(self):
+        return None
 
-    def on_geometry_change(self, node, sensor):
-        if self.callback:
-            self.callback()
+    def __setstate__(self, state):
+        return None
 
-    def detach(self):
-        #Detach the observer to stop tracking geometry changes.
-        if self.sensor:
-            self.sensor.detach()
-            self.scene_graph = None
-"""
+    def execute(self, ob):
+        pass
 
 class GeometryObserver:
     def __init__(self, callback):
@@ -86,35 +87,6 @@ class GeometryObserver:
     def __del__(self):
         self.detach()
 
-
-class DynamicGrid():
-    def __init__(self, obj):
-        obj.Proxy = self
-        self.setProperties(obj)
-        
-    def setProperties(self, obj):
-        pl = obj.PropertiesList
-        if 'Placement' not in pl:
-            obj.addProperty("App::PropertyPlacement", "Placement", "Base", "Defines the placement of the grid").Placement = FreeCAD.Placement(FreeCAD.Vector(0, 0, 0), FreeCAD.Rotation(0, 0, 0))
-        if 'Color' not in pl:
-            obj.addProperty("App::PropertyColor", "Color", "Grid", "Grid color").Color = (0.5, 0.5, 0.5)
-        if 'Size' not in pl:
-            obj.addProperty("App::PropertyIntegerConstraint", "Size", "Grid", "Grid size").Size = (100, 1, 10**6, 5)
-        if 'Spacing' not in pl:
-            obj.addProperty("App::PropertyIntegerConstraint", "Spacing", "Grid", "Grid spacing").Spacing = (10, 1, 10**6, 5)
-        if 'Dynamic' not in pl:
-            obj.addProperty("App::PropertyBool", "Dynamic", "Grid", "Update grid position based on the 3d scene").Dynamic = True
-    def onDocumentRestored(self, obj):
-        self.setProperties(obj)
-        
-    def __getstate__(self):
-        return None
-
-    def __setstate__(self, state):
-        return None
-
-    def execute(self, ob):
-        pass
 
 class LowestVisibleZ:
     def __init__(self, doc=None):
