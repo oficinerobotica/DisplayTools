@@ -284,9 +284,17 @@ class ViewProviderDynamicGrid():
 
     def updateGridLocation(self):
         """Update grid position based on Placement property."""
-        placement = self.Object.Placement  # Now a FreeCAD.Placement object
-        coinVector = coin.SbVec3f(placement.Base.x, placement.Base.y, placement.Base.z)  # Extract position
-        self.transform.translation.setValue(coinVector)
+        try:
+            placement = self.Object.Placement
+            # Create SbVec3f with three float arguments
+            vec = coin.SbVec3f(
+                float(placement.Base.x),
+                float(placement.Base.y),
+                float(placement.Base.z)
+            )
+            self.transform.translation.setValue(vec)
+        except Exception as e:
+            print(f"Error updating grid location: {e}")
         
     def updateDynamicLocation(self):
         """Activates or deactivates GeometryObserver based on 'Dynamic' property."""
@@ -303,8 +311,6 @@ class ViewProviderDynamicGrid():
                 self.geometry_observer = None
                 print("GeometryObserver detached.")
         FreeCADGui.updateGui()
-
-
 
     def onSceneGeometryChanged(self):
         """Handle scene geometry changes by updating the grid's Z position."""
